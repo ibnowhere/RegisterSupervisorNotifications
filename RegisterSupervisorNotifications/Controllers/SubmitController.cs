@@ -13,31 +13,16 @@ namespace RegisterSupervisorNotifications.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ApiController : ControllerBase
+    public class SubmitController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-
-        public ApiController(IUnitOfWork unitOfWork)
+        public SubmitController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Supervisors()
-        {
-            try
-            {
-                List<Supervisor> supervisors = (await _unitOfWork.SupervisorRepo.GetSupervisors()).ToList();
-                return new OkObjectResult(supervisors.OrderBy(s => s.Jurisdiction).ThenBy(s => s.LastName).ThenBy(s => s.FirstName).Select(s => s.ToString()));
-            }
-            catch (Exception)
-            {
-                return new BadRequestResult();
-            }
-        }
-
         [HttpPost]
-        public IActionResult Submit(NotificationRequest notificationRequest)
+        public IActionResult Post(NotificationRequest notificationRequest)
         {
             if (notificationRequest is null)
             {
@@ -60,7 +45,7 @@ namespace RegisterSupervisorNotifications.Controllers
                 return new BadRequestResult();
             }
 
-            return CreatedAtAction(nameof(notificationRequest), new { supervisor = notificationRequest.Supervisor }, notificationRequest);
+            return new OkResult();
         }
 
         private IEnumerable<string> ValidateNotificationRequest(NotificationRequest notificationRequest)
@@ -83,11 +68,11 @@ namespace RegisterSupervisorNotifications.Controllers
             }
             else
             {
-                if (string.IsNullOrWhiteSpace(notificationRequest.Email) && !ValidateEmail(notificationRequest.Email))
+                if (!string.IsNullOrWhiteSpace(notificationRequest.Email) && !ValidateEmail(notificationRequest.Email))
                 {
                     errors.Add("Invalid email format");
                 }
-                else if(string.IsNullOrWhiteSpace(notificationRequest.Phone) && !ValidatePhone(notificationRequest.Phone))
+                else if (!string.IsNullOrWhiteSpace(notificationRequest.Phone) && !ValidatePhone(notificationRequest.Phone))
                 {
                     errors.Add("Invalid phone format");
                 }
