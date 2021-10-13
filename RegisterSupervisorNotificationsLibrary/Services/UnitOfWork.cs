@@ -1,13 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RegisterSupervisorNotificationsLibrary.Services.Interfaces;
+using System;
 
 namespace RegisterSupervisorNotificationsLibrary.Services
 {
-    public class UnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
-        
+        public INotificationSubscriptionRepo SubscriptionRepo { get; }
+        public ISupervisorRepo SupervisorRepo { get; }
+
+        public UnitOfWork(INotificationSubscriptionRepo subscriptionRepo, ISupervisorRepo supervisorRepo)
+        {
+            SubscriptionRepo = subscriptionRepo ?? throw new ArgumentNullException(nameof(subscriptionRepo));
+            SupervisorRepo = supervisorRepo ?? throw new ArgumentNullException(nameof(supervisorRepo));
+        }
     }
 }

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RegisterSupervisorNotificationsLibrary.Models;
 
 namespace RegisterSupervisorNotificationsLibrary.Services.Interfaces
 {
     public interface INotificationSubscriptionRepo
     {
-        
+        public void Submit(NotificationRequest notificationRequest);
     }
 }

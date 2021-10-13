@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using RegisterSupervisorNotificationsLibrary.Services;
+using RegisterSupervisorNotificationsLibrary.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +28,14 @@ namespace RegisterSupervisorNotifications
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddHttpClient("supervisors", c =>
+            {
+                c.BaseAddress = new Uri("https://o3m5qixdng.execute-api.us-east-1.amazonaws.com/");
+                c.DefaultRequestHeaders.Add("User-Agent", "RegisterSupervisorNotifications-Challenge4.1");
+            });
+            services.AddTransient<ISupervisorRepo, SupervisorRepo>();
+            services.AddTransient<INotificationSubscriptionRepo, NotificationSubscriptionRepo>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
