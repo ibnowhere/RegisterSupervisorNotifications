@@ -10,3 +10,6 @@ Endpoints:
 /api/supervisor
 /api/submit
 /notificationrequest ==> takes you to the static website
+
+
+Static website is located in RegisterSupervisorNotifications\Static Files
