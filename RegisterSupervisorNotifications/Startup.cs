@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RegisterSupervisorNotificationsLibrary.Services;
 using RegisterSupervisorNotificationsLibrary.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -46,10 +48,19 @@ namespace RegisterSupervisorNotifications
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseFileServer(new FileServerOptions()
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles")),
+                RequestPath = "/NotificationRequest",
+                EnableDefaultFiles = true
+            });
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
