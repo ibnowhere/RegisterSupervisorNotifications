@@ -4,10 +4,14 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using RegisterSupervisorNotificationsLibrary.Services;
+using RegisterSupervisorNotificationsLibrary.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,6 +29,14 @@ namespace RegisterSupervisorNotifications
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient("supervisors", c =>
+            {
+                c.BaseAddress = new Uri("https://o3m5qixdng.execute-api.us-east-1.amazonaws.com/");
+                c.DefaultRequestHeaders.Add("User-Agent", "RegisterSupervisorNotifications-Challenge4.1");
+            });
+            services.AddTransient<ISupervisorRepo, SupervisorRepo>();
+            services.AddTransient<INotificationSubscriptionRepo, NotificationSubscriptionRepo>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddControllers();
         }
 
@@ -36,10 +48,19 @@ namespace RegisterSupervisorNotifications
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseFileServer(new FileServerOptions()
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles")),
+                RequestPath = "/NotificationRequest",
+                EnableDefaultFiles = true
+            });
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
